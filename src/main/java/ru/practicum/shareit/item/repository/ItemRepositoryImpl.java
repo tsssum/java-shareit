@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository {
-    private final Map<Long, Item> ITEMS = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>();
     private long nextId = 1;
 
     @Override
     public List<Item> findByUserId(long userId) {
-        return ITEMS.values().stream()
+        return items.values().stream()
                 .filter(item -> item.getOwner() != null
                         && item.getOwner().getId() != null
                         && item.getOwner().getId().equals(userId))
@@ -28,7 +28,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Optional<Item> findById(long id) {
-        return Optional.ofNullable(ITEMS.get(id));
+        return Optional.ofNullable(items.get(id));
     }
 
     @Override
@@ -36,13 +36,13 @@ public class ItemRepositoryImpl implements ItemRepository {
         if (item.getId() == null) {
             item.setId(nextId++);
         }
-        ITEMS.put(item.getId(), item);
+        items.put(item.getId(), item);
         return item;
     }
 
     @Override
     public void update(Long itemId, ItemDTO itemDTO) {
-        Item item = ITEMS.get(itemId);
+        Item item = items.get(itemId);
         if (itemDTO.getTitle() != null) {
             item.setTitle(itemDTO.getTitle());
         }
@@ -61,7 +61,7 @@ public class ItemRepositoryImpl implements ItemRepository {
             return List.of();
         }
         String needle = text.toLowerCase();
-        return ITEMS.values().stream()
+        return items.values().stream()
                 .filter(item -> Boolean.TRUE.equals(item.getAvailable()))
                 .filter(item -> containsIgnoreCase(item.getTitle(), needle)
                         || containsIgnoreCase(item.getDescription(), needle))

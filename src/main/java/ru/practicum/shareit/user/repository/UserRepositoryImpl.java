@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
-    private final Map<Long, User> USERS = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
     private long nextId = 1;
 
     @Override
@@ -28,7 +28,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        boolean emailExists = USERS.values().stream()
+        boolean emailExists = users.values().stream()
                 .anyMatch(u -> u.getEmail().equals(user.getEmail()));
         if (emailExists) {
             throw new ConflictException("Email уже используется");
@@ -36,7 +36,7 @@ public class UserRepositoryImpl implements UserRepository {
         if (user.getId() == null) {
             user.setId(nextId++);
         }
-        USERS.put(user.getId(), user);
+        users.put(user.getId(), user);
         return user;
     }
 }

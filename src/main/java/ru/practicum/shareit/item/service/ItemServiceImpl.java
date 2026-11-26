@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDTO;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -39,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getOwner().getId().equals(userId)) {
             repository.update(itemId, itemDTO);
         } else {
-            throw new NotFoundException("Редактировать вещь может только её владелец");
+            throw new ConflictException("Редактировать вещь может только её владелец");
         }
         return ItemMapper.mapToItemDto(repository.save(item));
     }
@@ -56,14 +57,22 @@ public class ItemServiceImpl implements ItemService {
     // Просмотр владельцем списка всех его вещей с указанием названия и описания для каждой из них
     @Override
     public List<ItemDTO> getItemsByOwner(Long userId) {
-        return repository.findByUserId(userId).stream()
-                .map(ItemMapper::mapToItemDto)
-                .collect(Collectors.toList());
+        if (userRepository.findById(userId).isPresent()) {
+            return repository.findByUserId(userId).stream()
+                    .map(ItemMapper::mapToItemDto)
+                    .collect(Collectors.toList());
+        } else {
+            throw new NotFoundException("Пользователь не найден: " + userId);
+        }
+
     }
 
     // система ищет вещи, содержащие этот текст в названии или описании
     @Override
     public List<ItemDTO> search(String text) {
+        if (text == null || text.isBlank()) {
+            return List.of();
+        }
         return repository.search(text).stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());

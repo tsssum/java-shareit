@@ -13,4 +13,6 @@ public interface UserRepository {
     User save(User user);
 
     void deleteById(long id);
+
+    boolean emailExists(User user);
 }

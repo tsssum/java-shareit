@@ -27,6 +27,9 @@ class UserServiceImpl implements UserService {
     @Override
     public UserDTO saveUser(UserDTO userDto) {
         User user = UserMapper.mapToUser(userDto);
+        if (repository.emailExists(user)) {
+            throw new ConflictException("Email уже используется");
+        }
         return UserMapper.mapToUserDto(repository.save(user));
     }
 

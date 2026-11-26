@@ -43,10 +43,10 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public void update(Long itemId, ItemDTO itemDTO) {
         Item item = items.get(itemId);
-        if (itemDTO.getName() != null) {
+        if (itemDTO.getName() != null && !itemDTO.getName().isBlank()) {
             item.setName(itemDTO.getName());
         }
-        if (itemDTO.getDescription() != null) {
+        if (itemDTO.getDescription() != null && !itemDTO.getDescription().isBlank()) {
             item.setDescription(itemDTO.getDescription());
         }
         if (itemDTO.getAvailable() != null) {
@@ -57,9 +57,6 @@ public class ItemRepositoryImpl implements ItemRepository {
     // и когда будет работа с бд исправить поиск
     @Override
     public List<Item> search(String text) {
-        if (text == null || text.isBlank()) {
-            return List.of();
-        }
         String needle = text.toLowerCase();
         return items.values().stream()
                 .filter(item -> Boolean.TRUE.equals(item.getAvailable()))

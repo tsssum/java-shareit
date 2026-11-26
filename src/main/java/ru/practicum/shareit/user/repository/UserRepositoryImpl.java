@@ -2,7 +2,6 @@ package ru.practicum.shareit.user.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
@@ -25,12 +24,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        boolean emailExists = users.values().stream()
-                .filter(u -> !Objects.equals(u.getId(), user.getId()))
-                .anyMatch(u -> u.getEmail().equals(user.getEmail()));
-        if (emailExists) {
-            throw new ConflictException("Email уже используется");
-        }
         if (user.getId() == null) {
             user.setId(nextId++);
         }
@@ -41,5 +34,12 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void deleteById(long id) {
         users.remove(id);
+    }
+
+    @Override
+    public boolean emailExists(User user) {
+        return users.values().stream()
+                .filter(u -> !Objects.equals(u.getId(), user.getId()))
+                .anyMatch(u -> u.getEmail().equals(user.getEmail()));
     }
 }

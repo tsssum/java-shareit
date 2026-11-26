@@ -39,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getOwner().getId().equals(userId)) {
             repository.update(itemId, itemDTO);
         } else {
-            throw new IllegalStateException("Редактировать вещь может только её владелец");
+            throw new NotFoundException("Редактировать вещь может только её владелец");
         }
         return ItemMapper.mapToItemDto(repository.save(item));
     }

@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDTO;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -22,7 +23,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDTO addItem(Long userId, ItemDTO itemDto) {
         User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден: " + userId));
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
         return ItemMapper.mapToItemDto(repository.save(item));
@@ -33,7 +34,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDTO updateItem(Long userId, Long itemId, ItemDTO itemDTO) {
         Item item = repository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("Вещь с id=" + itemId + " не найдена"));
+                .orElseThrow(() -> new NotFoundException("Вещь с id=" + itemId + " не найдена"));
 
         if (item.getOwner().getId().equals(userId)) {
             repository.update(itemId, itemDTO);
@@ -47,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDTO getItem(Long itemId) {
         Optional<Item> itemOptional = repository.findById(itemId);
         if (itemOptional.isEmpty()) {
-            throw new IllegalArgumentException("Вещь с id=" + itemId + " не найдена");
+            throw new NotFoundException("Вещь с id=" + itemId + " не найдена");
         }
         return ItemMapper.mapToItemDto(itemOptional.get());
     }

@@ -8,7 +8,7 @@ import ru.practicum.shareit.user.model.User;
 public class Item {
     private Long id;
     private User owner;
-    private String title;
+    private String name;
     private String description;
     private Boolean available;
     private ItemRequest request;

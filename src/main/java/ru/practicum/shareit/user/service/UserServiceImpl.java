@@ -2,7 +2,8 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exeptions.ConflictException;
+import ru.practicum.shareit.exceptions.ConflictException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDTO;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -31,13 +32,13 @@ class UserServiceImpl implements UserService {
 
     public UserDTO getUserById(Long id) {
         User user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден: " + id));
         return UserMapper.mapToUserDto(user);
     }
 
     public UserDTO updateUser(Long id, UserDTO updates) {
         User existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден: " + id));
 
         if (updates.getName() != null && !updates.getName().isBlank()) {
             existing.setName(updates.getName());
@@ -49,7 +50,7 @@ class UserServiceImpl implements UserService {
                     .filter(u -> u.getEmail().equalsIgnoreCase(updates.getEmail()))
                     .findAny()
                     .ifPresent(u -> {
-                        throw new ConflictException("Email already in use");
+                        throw new ConflictException("Почта уже используется");
                     });
             existing.setEmail(updates.getEmail());
         }
@@ -58,7 +59,7 @@ class UserServiceImpl implements UserService {
 
     public void deleteUser(Long id) {
         repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден: " + id));
         repository.deleteById(id);
     }
 }

@@ -2,7 +2,7 @@ package ru.practicum.shareit.user.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exeptions.ConflictException;
+import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
@@ -26,6 +26,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User save(User user) {
         boolean emailExists = users.values().stream()
+                .filter(u -> !Objects.equals(u.getId(), user.getId()))
                 .anyMatch(u -> u.getEmail().equals(user.getEmail()));
         if (emailExists) {
             throw new ConflictException("Email уже используется");

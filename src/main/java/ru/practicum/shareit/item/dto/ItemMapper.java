@@ -9,7 +9,7 @@ public class ItemMapper {
     public static ItemDTO mapToItemDto(Item item) {
         ItemDTO dto = new ItemDTO();
         dto.setId(item.getId());
-        dto.setTitle(item.getTitle());
+        dto.setName(item.getName());
         dto.setDescription(item.getDescription());
         dto.setAvailable(item.getAvailable());
         dto.setRequestId(item.getRequest() != null ? item.getRequest().getId() : null);
@@ -19,7 +19,7 @@ public class ItemMapper {
     public static Item toItem(ItemDTO dto) {
         Item item = new Item();
         item.setId(dto.getId());
-        item.setTitle(dto.getTitle());
+        item.setName(dto.getName());
         item.setDescription(dto.getDescription());
         item.setAvailable(dto.getAvailable());
         return item;

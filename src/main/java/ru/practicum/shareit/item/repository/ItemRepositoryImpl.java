@@ -43,8 +43,8 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public void update(Long itemId, ItemDTO itemDTO) {
         Item item = items.get(itemId);
-        if (itemDTO.getTitle() != null) {
-            item.setTitle(itemDTO.getTitle());
+        if (itemDTO.getName() != null) {
+            item.setName(itemDTO.getName());
         }
         if (itemDTO.getDescription() != null) {
             item.setDescription(itemDTO.getDescription());
@@ -63,7 +63,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         String needle = text.toLowerCase();
         return items.values().stream()
                 .filter(item -> Boolean.TRUE.equals(item.getAvailable()))
-                .filter(item -> containsIgnoreCase(item.getTitle(), needle)
+                .filter(item -> containsIgnoreCase(item.getName(), needle)
                         || containsIgnoreCase(item.getDescription(), needle))
                 .collect(Collectors.toList());
     }

@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exeptions.ConflictException;
 import ru.practicum.shareit.user.dto.UserDTO;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -26,5 +27,36 @@ class UserServiceImpl implements UserService {
     public UserDTO saveUser(UserDTO userDto) {
         User user = UserMapper.mapToUser(userDto);
         return UserMapper.mapToUserDto(repository.save(user));
+    }
+
+    public UserDTO getUserById(Long id) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found: " + id));
+        return UserMapper.mapToUserDto(user);
+    }
+
+    public UserDTO updateUser(Long id, UserDTO updates) {
+        User existing = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found: " + id));
+
+        if (updates.getName() != null && !updates.getName().isBlank()) {
+            existing.setName(updates.getName());
+        }
+        if (updates.getEmail() != null && !updates.getEmail().isBlank()) {
+            // проверить, что email не занят другим пользователем
+            repository.findAll().stream()
+                    .filter(u -> !u.getId().equals(id))
+                    .filter(u -> u.getEmail().equalsIgnoreCase(updates.getEmail()))
+                    .findAny()
+                    .ifPresent(u -> { throw new ConflictException("Email already in use"); });
+            existing.setEmail(updates.getEmail());
+        }
+        return UserMapper.mapToUserDto(repository.save(existing));
+    }
+
+    public void deleteUser(Long id) {
+        repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found: " + id));
+        repository.deleteById(id);
     }
 }

@@ -5,10 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exeptions.ConflictException;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,12 +15,12 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        return List.of();
+        return new ArrayList<>(users.values());
     }
 
     @Override
     public Optional<User> findById(long id) {
-        return Optional.empty();
+        return Optional.ofNullable(users.get(id));
     }
 
     @Override
@@ -38,5 +35,10 @@ public class UserRepositoryImpl implements UserRepository {
         }
         users.put(user.getId(), user);
         return user;
+    }
+
+    @Override
+    public void deleteById(long id) {
+        users.remove(id);
     }
 }

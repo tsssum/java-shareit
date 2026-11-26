@@ -48,7 +48,9 @@ class UserServiceImpl implements UserService {
                     .filter(u -> !u.getId().equals(id))
                     .filter(u -> u.getEmail().equalsIgnoreCase(updates.getEmail()))
                     .findAny()
-                    .ifPresent(u -> { throw new ConflictException("Email already in use"); });
+                    .ifPresent(u -> {
+                        throw new ConflictException("Email already in use");
+                    });
             existing.setEmail(updates.getEmail());
         }
         return UserMapper.mapToUserDto(repository.save(existing));
